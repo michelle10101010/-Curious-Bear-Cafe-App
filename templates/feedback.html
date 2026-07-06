@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Curious Bear Café Feedback</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Curious Bear Café Feedback</h1>
+
+    <form method="POST">
+        <label>Select Order</label>
+        <select name="order_id" required>
+            {% for order in orders %}
+                <option value="{{ order.order_id }}">
+                    Order {{ order.order_id }} - {{ order.customer_name }} - {{ order.drink_name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <label>Customer Rating</label>
+        <select name="customer_rating" required>
+            <option value="5">5 - Excellent</option>
+            <option value="4">4 - Good</option>
+            <option value="3">3 - Okay</option>
+            <option value="2">2 - Needs Improvement</option>
+            <option value="1">1 - Poor</option>
+        </select>
+
+        <br><br>
+
+        <label>Customer Comment</label>
+        <textarea name="customer_comment" rows="4" cols="40" placeholder="Enter customer feedback here"></textarea>
+
+        <br><br>
+
+        <button type="submit">Save Feedback</button>
+    </form>
+
+    <br>
+
+    <div class="nav-links">
+        <p>
+            <a href="/">Add New Order</a> 
+            <a href="/orders">View Orders</a> 
+            <a href="/feedback-report">View Feedback Report</a> 
+            <a href="/sales-report">View Sales Report</a>
+            <a href="/dashboard" class="button">View Visual Dashboard</a>
+        </p>
+    </div>
+
+
+</body>
+</html>

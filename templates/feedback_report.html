@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Curious Bear Café Feedback Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Curious Bear Café Feedback Report</h1>
+
+    <h2>Average Rating by Drink</h2>
+
+    {% if average_rating_by_drink %}
+        <table border="1" cellpadding="6">
+            <tr>
+                <th>Drink</th>
+                <th>Category</th>
+                <th>Number of Feedback</th>
+                <th>Average Rating</th>
+            </tr>
+
+            {% for row in average_rating_by_drink %}
+            <tr>
+                <td>{{ row.drink_name }}</td>
+                <td>{{ row.category }}</td>
+                <td>{{ row.number_of_feedback }}</td>
+                <td>{{ row.average_rating }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No feedback ratings have been recorded yet.</p>
+    {% endif %}
+
+    <h2>Customer Comments</h2>
+
+    {% if completed_feedback %}
+        <table border="1" cellpadding="6">
+            <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Drink</th>
+                <th>Rating</th>
+                <th>Comment</th>
+            </tr>
+
+            {% for order in completed_feedback %}
+            <tr>
+                <td>{{ order.order_id }}</td>
+                <td>{{ order.customer_name }}</td>
+                <td>{{ order.drink_name }}</td>
+                <td>{{ order.customer_rating }}</td>
+                <td>{{ order.customer_comment }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No customer comments have been recorded yet.</p>
+    {% endif %}
+
+    <h2>Orders Pending Feedback</h2>
+
+    {% if pending_feedback %}
+        <table border="1" cellpadding="6">
+            <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Drink</th>
+                <th>Payment Status</th>
+            </tr>
+
+            {% for order in pending_feedback %}
+            <tr>
+                <td>{{ order.order_id }}</td>
+                <td>{{ order.customer_name }}</td>
+                <td>{{ order.drink_name }}</td>
+                <td>{{ order.payment_status }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>All orders have received feedback.</p>
+    {% endif %}
+
+    <br>
+
+    <div class="nav-links">
+        <p>
+            <a href="/">Add New Order</a> 
+            <a href="/orders">View Orders</a> 
+            <a href="/feedback">Add Feedback</a> 
+            <a href="/sales-report">View Sales Report</a>
+            <a href="/dashboard" class="button">View Visual Dashboard</a>
+        </p>
+</div>
+
+</body>
+</html>

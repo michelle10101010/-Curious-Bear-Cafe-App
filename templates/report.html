@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Curious Bear Café Sales Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Curious Bear Café Sales Report</h1>
+
+    <h2>Drink Sales Summary</h2>
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>Drink</th>
+            <th>Category</th>
+            <th>Total Quantity Sold</th>
+            <th>Total Revenue</th>
+            <th>Average Rating</th>
+        </tr>
+
+        {% for row in drink_sales %}
+        <tr>
+            <td>{{ row.drink_name }}</td>
+            <td>{{ row.category }}</td>
+            <td>{{ row.total_quantity_sold }}</td>
+            <td>{{ row.total_revenue }}</td>
+            <td>{{ row.average_rating }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Payment Status Summary</h2>
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>Payment Status</th>
+            <th>Number of Orders</th>
+            <th>Total Quantity</th>
+            <th>Total Amount</th>
+        </tr>
+
+        {% for row in payment_status %}
+        <tr>
+            <td>{{ row.payment_status }}</td>
+            <td>{{ row.number_of_orders }}</td>
+            <td>{{ row.total_quantity }}</td>
+            <td>{{ row.total_amount }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Category Summary</h2>
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>Category</th>
+            <th>Total Quantity Sold</th>
+            <th>Total Revenue</th>
+            <th>Average Rating</th>
+        </tr>
+
+        {% for row in category_summary %}
+        <tr>
+            <td>{{ row.category }}</td>
+            <td>{{ row.total_quantity_sold }}</td>
+            <td>{{ row.total_revenue }}</td>
+            <td>{{ row.average_rating }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+
+    <h2>Curious Bear Boss Notes</h2>
+
+    {% if boss_notes %}
+        <ol>
+            {% for note in boss_notes %}
+                <li>{{ note }}</li>
+            {% endfor %}
+        </ol>   
+    {% else %}
+        <p>No boss notes available yet.</p>
+    {% endif %}
+
+    <p>
+
+    <br>
+
+    <div class="nav-links">
+        <p>
+            <a href="/">Add New Order</a> 
+            <a href="/orders">View Orders</a> 
+            <a href="/feedback">Add Feedback</a> 
+            <a href="/feedback-report">View Feedback Report</a> 
+            <a href="/dashboard" class="button">View Visual Dashboard</a>
+        </p>
+</div>
+         
+</body>
+</html>

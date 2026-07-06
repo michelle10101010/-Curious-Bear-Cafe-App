@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Curious Bear Café</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<script>
+    const drinksByCategory = {
+        "Coffee": ["Almond Latte", "Latte"],
+        "Tea": ["Matcha Cloud", "Berry Sparkle Tea"],
+        "Chocolate": ["Curious Cocoa", "Banana Chocolate"]
+    };
+
+    function updateDrinkOptions() {
+        const categorySelect = document.getElementById("category");
+        const drinkSelect = document.getElementById("drink_name");
+
+        const selectedCategory = categorySelect.value;
+        const drinks = drinksByCategory[selectedCategory];
+
+        drinkSelect.innerHTML = "";
+
+        drinks.forEach(function(drink) {
+            const option = document.createElement("option");
+            option.value = drink;
+            option.textContent = drink;
+            drinkSelect.appendChild(option);
+        });
+    }
+
+    updateDrinkOptions();
+</script>
+
+
+
+<body>
+    <div class="container">
+
+        <img src="{{ url_for('static', filename='curious_bear.png') }}"
+             alt="Curious Bear Café Boss"
+             class="mascot">
+
+        <h1>Curious Bear Café</h1>
+        <p class="subtitle">Order Form</p>
+
+        <form method="POST">
+
+            <label>Customer Name</label>
+            <input type="text" name="customer_name" required>
+
+            <label>Category</label>
+            <select name="category" id="category" onchange="updateDrinkOptions()" required>
+                <option value="Coffee">Coffee</option>
+                <option value="Tea">Tea</option>
+                <option value="Chocolate">Chocolate</option>
+            </select>
+
+            <label>Drink Name</label>
+            <select name="drink_name" id="drink_name" required>
+            </select>
+
+            <label>Cup Size</label>
+            <select name="drink_size" required>
+                <option value="Small">Small - $4.00</option>
+                <option value="Medium">Medium - $5.00</option>
+                <option value="Large">Large - $6.00</option>
+            </select>
+
+
+            <label>Quantity</label>
+            <input type="number" name="quantity" min="1" required>
+
+
+            <label>Payment Status</label>
+            <select name="payment_status" required>
+                <option value="Paid">Paid</option>
+                <option value="Unpaid">Unpaid</option>
+            </select>
+
+
+            <button type="submit">Submit Order</button>
+        </form>
+
+        <div class="nav-links">
+            <p>
+                <a href="/">Add New Order</a> 
+                <a href="/orders">View Orders</a> 
+                <a href="/feedback">Add Feedback</a> 
+                <a href="/feedback-report">View Feedback Report</a> 
+                <a href="/sales-report">View Sales Report</a>
+                <a href="/dashboard" class="button">View Visual Dashboard</a>
+            </p>
+
+        </div>
+
+    </div>
+</body>
+</html>
+

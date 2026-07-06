@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Curious Bear Café Visual Dashboard</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <h1>Curious Bear Café Visual Dashboard</h1>
+
+        <p class="subtitle">
+            Chapter 7 Upgrade: Turning DuckDB query results into visual insights.
+        </p>
+
+        <h2>Revenue by Drink</h2>
+        <div class="chart-box">
+            <canvas id="revenueByDrinkChart"></canvas>
+        </div>
+
+        <h2>Payment Status Summary</h2>
+        <div class="chart-box">
+            <canvas id="paymentStatusChart"></canvas>
+        </div>
+
+        <h2>Revenue by Category</h2>
+        <div class="chart-box">
+            <canvas id="categoryRevenueChart"></canvas>
+        </div>
+
+        <h2>Average Rating by Drink</h2>
+        <div class="chart-box">
+            <canvas id="ratingByDrinkChart"></canvas>
+        </div>
+
+        <div class="nav-links">
+            <a href="/">Add New Order</a>
+            <a href="/orders">View Orders</a>
+            <a href="/feedback">Add Feedback</a>
+            <a href="/feedback-report">View Feedback Report</a>
+            <a href="/report">View Sales Report</a>
+        </div>
+
+    </div>
+
+    <script>
+        // Data passed from Flask
+        const drinkNames = {{ drink_names | tojson }};
+        const drinkRevenues = {{ drink_revenues | tojson }};
+
+        const ratingDrinkNames = {{ rating_drink_names | tojson }};
+        const drinkRatings = {{ drink_ratings | tojson }};
+
+        const paymentStatuses = {{ payment_statuses | tojson }};
+        const paymentAmounts = {{ payment_amounts | tojson }};
+
+        const categoryNames = {{ category_names | tojson }};
+        const categoryRevenues = {{ category_revenues | tojson }};
+
+        // 1. Bar chart: Revenue by drink
+        new Chart(document.getElementById("revenueByDrinkChart"), {
+            type: "bar",
+            data: {
+                labels: drinkNames,
+                datasets: [{
+                    label: "Total Revenue ($)",
+                    data: drinkRevenues
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: "Which drink generated the most revenue?"
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // 2. Pie chart: Paid vs Unpaid
+        new Chart(document.getElementById("paymentStatusChart"), {
+            type: "pie",
+            data: {
+                labels: paymentStatuses,
+                datasets: [{
+                    label: "Total Amount ($)",
+                    data: paymentAmounts
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: "Paid vs Unpaid Sales"
+                    }
+                }
+            }
+        });
+
+        // 3. Bar chart: Revenue by category
+        new Chart(document.getElementById("categoryRevenueChart"), {
+            type: "bar",
+            data: {
+                labels: categoryNames,
+                datasets: [{
+                    label: "Total Revenue ($)",
+                    data: categoryRevenues
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: "Which category performed best?"
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // 4. Bar chart: Average rating by drink
+        new Chart(document.getElementById("ratingByDrinkChart"), {
+            type: "bar",
+            data: {
+                labels: ratingDrinkNames,
+                datasets: [{
+                    label: "Average Rating",
+                    data: drinkRatings
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: "Customer Rating by Drink"
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 5
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
