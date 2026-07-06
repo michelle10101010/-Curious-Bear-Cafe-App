@@ -1,4 +1,4 @@
-# Curious Bear Café App
+# Curious Bear Café App  🐻☕
 
 A simple café sales and reporting app that uses Flask, JSON files, DuckDB, and basic visualization to record café orders and analyse business performance.
 
