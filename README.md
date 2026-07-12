@@ -246,7 +246,6 @@ It helped me practise:
 * The app runs locally using Flask.
 * The app has been tested locally.
 * Deployment has not been tested yet.
-* The project is inspired by the learning concepts from *DuckDB Up & Running*, especially Chapter 6 and Chapter 7.
 * This project should not be used as a real café point-of-sale or accounting system.
 
 ## Notes for macOS and Windows Users
