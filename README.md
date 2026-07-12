@@ -405,7 +405,9 @@ The project specifically references learning concepts from:
 
 * Chapter 6: Using DuckDB with JSON files
 * Chapter 7: Visualization
-
+* Advanced Certificate in Applied Artificial Intelligence (AI) Programming with SMU Academy: Sentiment Analysis concept
+  https://academy.smu.edu.sg/courses/advanced-certificate-applied-artificial-intelligence-ai-programming
+  
 The customer feedback intelligence upgrade was developed as part of my continued learning in Python, text analysis, and sentiment analysis.
 
 The project was further modified and extended for my own learning, including creating a café ordering flow, JSON data storage, DuckDB-powered reports, customer feedback tracking, boss notes, dashboard-style analysis, rule-based sentiment classification, and issue detection.
