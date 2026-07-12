@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, redirect
 import json
 import os
 import duckdb
-from datetime import date
+from datetime import date, datetime
 
 
 # 2. Set up Flask app and file paths
@@ -27,6 +27,52 @@ def load_orders():
 def save_orders(orders):
     with open(DATA_FILE, "w") as file:
         json.dump(orders, file, indent=4)
+
+
+def classify_sentiment(comment, rating):
+    comment = comment.lower()
+
+    positive_words = [
+        "good", "great", "excellent", "nice", "friendly", "delicious",
+        "love", "fast", "happy", "perfect", "wonderful", "fresh"
+    ]
+
+    negative_words = [
+        "bad", "slow", "cold", "rude", "expensive", "late", "poor",
+        "terrible", "too sweet", "too bitter", "waiting", "wait", "wrong"
+    ]
+
+    positive_count = sum(word in comment for word in positive_words)
+    negative_count = sum(word in comment for word in negative_words)
+
+    if rating >= 4 and negative_count == 0:
+        return "Positive"
+    elif rating <= 2 or negative_count > positive_count:
+        return "Negative"
+    elif positive_count > negative_count:
+        return "Positive"
+    else:
+        return "Neutral"
+
+
+def detect_issue_category(comment):
+    comment = comment.lower()
+
+    if any(word in comment for word in ["slow", "late", "waiting", "wait"]):
+        return "Waiting Time"
+
+    if any(word in comment for word in ["cold", "too sweet", "too bitter", "taste", "bad", "wrong", "drink"]):
+        return "Drink Quality"
+
+    if any(word in comment for word in ["rude", "unfriendly", "service", "staff"]):
+        return "Service"
+
+    if any(word in comment for word in ["expensive", "price", "cost"]):
+        return "Pricing"
+
+    return "None"
+
+
 
 
 def generate_sales_report():
@@ -222,6 +268,16 @@ def feedback():
             if order["order_id"] == order_id:
                 order["customer_rating"] = customer_rating
                 order["customer_comment"] = customer_comment
+                order["sentiment"] = classify_sentiment(
+                    customer_comment, 
+                    customer_rating
+                )
+                order["issue_category"] = detect_issue_category(
+                    customer_comment
+                )
+                order["feedback_timestamp"] = datetime.now().strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
 
         save_orders(orders)
 
@@ -242,36 +298,102 @@ def feedback():
 def feedback_report():
     orders = load_orders()
 
-    completed_feedback = []
-    pending_feedback = []
+    selected_date = request.args.get(
+        "date",
+        date.today().strftime("%Y-%m-%d")
+    )
 
-    for order in orders:
-        if order.get("customer_rating") is None:
-            pending_feedback.append(order)
-        else:
-            completed_feedback.append(order)
+    feedback_orders = [
+        order for order in orders
+        if order.get("customer_rating") is not None
+        and order.get("feedback_timestamp", "").startswith(selected_date)
+    ]
 
-    con = duckdb.connect()
+    total_feedback = len(feedback_orders)
 
-    average_rating_by_drink = con.execute(f"""
-        SELECT
-            drink_name,
-            category,
-            COUNT(customer_rating) AS number_of_feedback,
-            ROUND(AVG(customer_rating), 2) AS average_rating
-        FROM read_json_auto('{DATA_FILE}')
-        WHERE customer_rating IS NOT NULL
-        GROUP BY drink_name, category
-        ORDER BY average_rating DESC
-    """).df()
+    if total_feedback > 0:
+        average_rating = round(
+            sum(
+                order["customer_rating"] 
+                for order in feedback_orders
+            ) / total_feedback,
+            2
+        )
+    else:
+        average_rating = 0
 
-    con.close()
+    drink_ratings = {}
+
+    for order in feedback_orders:
+        drink_name = order.get("drink_name", "Unknown")
+        category = order.get("category", "Unknown")
+        rating = order.get("customer_rating")
+
+        if drink_name not in drink_ratings:
+            drink_ratings[drink_name] = {
+                "category": category,
+                "ratings": []
+            }
+
+        drink_ratings[drink_name]["ratings"].append(rating)
+
+    average_rating_by_drink = []
+
+    for drink_name, details in drink_ratings.items():
+        average_rating_by_drink.append({
+            "drink_name": drink_name,
+            "category": details["category"],
+            "number_of_feedback": len(details["ratings"]),
+            "average_rating": round(
+                sum(details["ratings"]) / len(details["ratings"]),
+                2
+            )
+        })
+
+    positive_count = sum(
+        1 for order in feedback_orders
+        if order.get("sentiment") == "Positive"
+    )
+
+    neutral_count = sum(
+        1 for order in feedback_orders
+        if order.get("sentiment") == "Neutral"
+    )
+
+    negative_count = sum(
+        1 for order in feedback_orders
+        if order.get("sentiment") == "Negative"
+    )
+
+    issue_summary = {}
+
+    for order in feedback_orders:
+        issue = order.get("issue_category", "None")
+        issue_summary[issue] = issue_summary.get(issue, 0) + 1
+
+    negative_feedback = [
+        order for order in feedback_orders
+        if order.get("sentiment") == "Negative"
+    ]
+
+    pending_feedback = [
+        order for order in orders
+        if order.get("customer_rating") is None
+    ]
 
     return render_template(
         "feedback_report.html",
-        average_rating_by_drink=average_rating_by_drink.to_dict("records"),
-        completed_feedback=completed_feedback,
-        pending_feedback=pending_feedback
+        completed_feedback=feedback_orders,
+        total_feedback=total_feedback,
+        average_rating=average_rating,
+        average_rating_by_drink=average_rating_by_drink,
+        positive_count=positive_count,
+        neutral_count=neutral_count,
+        negative_count=negative_count,
+        issue_summary=issue_summary,
+        negative_feedback=negative_feedback,
+        pending_feedback=pending_feedback,
+        selected_date=selected_date
     )
 
 @app.route("/sales-report")
@@ -365,10 +487,6 @@ def dashboard():
         category_names=category_names,
         category_revenues=category_revenues
     )
-
-
-
-
 
 # 5. Run the app
 

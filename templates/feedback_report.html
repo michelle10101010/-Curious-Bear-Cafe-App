@@ -5,7 +5,18 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Curious Bear Café Feedback Report</h1>
+    <div class="page-container">
+        <h1>Curious Bear Café Feedback Report</h1>
+
+    <h2>Feedback Intelligence Summary</h2>
+
+    <div class="summary-box">
+        <p><strong>Total Feedback Received:</strong> {{ total_feedback }}</p>
+        <p><strong>Overall Average Rating:</strong> {{ average_rating }}</p>
+        <p><strong>Positive Comments:</strong> {{ positive_count }}</p>
+        <p><strong>Neutral Comments:</strong> {{ neutral_count }}</p>
+        <p><strong>Negative Comments:</strong> {{ negative_count }}</p>
+    </div> 
 
     <h2>Average Rating by Drink</h2>
 
@@ -41,6 +52,8 @@
                 <th>Drink</th>
                 <th>Rating</th>
                 <th>Comment</th>
+                <th>Sentiment</th>
+                <th>Issue Category</th>
             </tr>
 
             {% for order in completed_feedback %}
@@ -50,12 +63,70 @@
                 <td>{{ order.drink_name }}</td>
                 <td>{{ order.customer_rating }}</td>
                 <td>{{ order.customer_comment }}</td>
+                
+                <td>
+                    <span class="sentiment {{ order.sentiment|lower }}">
+                        {{ order.sentiment }}
+                    </span>
+                </td>
+
+                <td>{{ order.issue_category }}</td>
             </tr>
             {% endfor %}
         </table>
     {% else %}
         <p>No customer comments have been recorded yet.</p>
     {% endif %}
+
+
+    <h2>Issue Category Summary</h2>
+
+    {% if issue_summary %}
+        <table border="1" cellpadding="6">
+            <tr>
+                <th>Issue Category</th>
+                <th>Number of Feedback</th>
+            </tr>
+
+            {% for issue, count in issue_summary.items() %}
+            <tr>
+                <td>{{ issue }}</td>
+                <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No issue categories have been detected yet.</p>
+    {% endif %}
+
+    <h2>Negative Feedback Requiring Attention</h2>
+
+    {% if negative_feedback %}
+        <table border="1" cellpadding="6">
+            <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Drink</th>
+                <th>Rating</th>
+                <th>Comment</th>
+                <th>Issue Category</th>
+            </tr>
+        
+            {% for order in negative_feedback %}
+            <tr>
+                <td>{{ order.order_id }}</td>
+                <td>{{ order.customer_name }}</td>
+                <td>{{ order.drink_name }}</td>
+                <td>{{ order.customer_rating }}</td>
+                <td>{{ order.customer_comment }}</td>
+                <td>{{ order.issue_category }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No negative feedback. Curious Bear is relieved.</p>
+    {% endif %}
+
 
     <h2>Orders Pending Feedback</h2>
 
@@ -81,17 +152,17 @@
         <p>All orders have received feedback.</p>
     {% endif %}
 
-    <br>
+    
 
-    <div class="nav-links">
-        <p>
+        <div class="nav-links">
             <a href="/">Add New Order</a> 
             <a href="/orders">View Orders</a> 
             <a href="/feedback">Add Feedback</a> 
             <a href="/sales-report">View Sales Report</a>
-            <a href="/dashboard" class="button">View Visual Dashboard</a>
-        </p>
-</div>
-
+            <a href="/dashboard">View Visual Dashboard</a>
+        </div>
+        
+    </div>
 </body>
 </html>
+
